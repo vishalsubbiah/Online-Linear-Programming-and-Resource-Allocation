@@ -19,7 +19,6 @@ constraints = [];
 for i in range(A.shape[1]):
     constraints.append( A[i,:]*X - z <= 0 );
 
-    
 for j in range(A.shape[1]):
     constraints.append(X[j] >= 0);
     constraints.append(X[j] <= q[j]);
@@ -30,7 +29,27 @@ obj = Maximize( pi*X - z );
 # Form and solve problem.
 prob = Problem(obj, constraints)
 prob.solve()  # Returns the optimal value.
-print "status:", prob.status
-print "optimal value", prob.value
-print "optimal var:"
+print "Optimal Order Fill:"
 print X.value
+
+############################################################################################
+
+# Dual of the Linear Problem to Solve Shadow Prices
+
+P = Variable(5);
+s = Variable(5);
+
+obj2 = Minimize(q.T*s);
+
+#for i in range(A.shape[1]):
+#    constraints2.append( A[i,:].T*P + s[i] >= pi[i] );
+    # constraints2.append(P[i] >= 0);
+    # constraints2.append(s[i] >= 0);
+
+constraints2 = [A.T*P + s >= pi, numpy.ones(5)*P == 1, P >= 0, s >= 0];
+
+# Form and solve problem.
+prob2 = Problem(obj2, constraints2)
+prob2.solve()  # Returns the optimal value.
+print "Optimal Shadow Prices:"
+print P.value
