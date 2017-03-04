@@ -2,7 +2,7 @@ import numpy as np
 from cvxpy import *
 
 m = 10
-K = 100
+K = 10000
 w = 1e-3
 
 A = np.random.randint(0, 2, (m, K))
@@ -18,16 +18,16 @@ Pi = p.T.dot(A) + np.sqrt(0.2) * np.random.randn(1, K)
 constraints = [A * x - z + s == 0, x <= q, x >= 0, s >= 0]
 
 u = (w/m) * sum_entries(log(s))
+#u = (w/m) * sum_entries(1 - exp(-s)/m)
 
 obj = Maximize(Pi * x - z + u)
 
 prob = Problem(obj, constraints)
-prob.solve()
+prob.solve(solver = CVXOPT)
 
-print z.value
-print prob.value
-print s.value
-print x.value
+print "status", prob.status
+print "optimal value", prob.value
+print "optimal var", x.value
 
 
 
