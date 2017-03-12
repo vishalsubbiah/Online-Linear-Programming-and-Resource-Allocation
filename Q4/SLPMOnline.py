@@ -71,9 +71,36 @@ print P.value
 
 ############################################################################################
 
-# Perform the optimation on additional bidders
+# Dual of the Linear Problem to Solve Shadow Prices
 
-b = X.value;
+P = Variable(5);
+s = Variable(5);
+
+obj2 = Minimize(q.T*s);
+
+#for i in range(A.shape[1]):
+#    constraints2.append( A[i,:].T*P + s[i] >= pi[i] );
+# constraints2.append(P[i] >= 0);
+# constraints2.append(s[i] >= 0);
+
+constraints2 = [A.T*P + s >= pi, numpy.ones(5)*P == 1, P >= 0, s >= 0];
+
+# Form and solve problem.
+prob2 = Problem(obj2, constraints2)
+prob2.solve()  # Returns the optimal value.
+print "Optimal Shadow Prices:"
+print P.value
+
+############################################################################################
+
+# Use state shadow prices to calculate future online decisions
+
+b = np.zeros(n);
+for i in range(0, n):
+    if pi[i] > A[i,:].T*P:
+        b[i] = 1;
+
+############################################################################################
 
 constraints = [];
 
@@ -86,6 +113,8 @@ for j in range(A.shape[1]):
 
 # Form objective.
 obj = Maximize( pi*X - z );
+
+constraints.append(X[1:n] == b);
 
 # Form and solve problem.
 prob = Problem(obj, constraints)

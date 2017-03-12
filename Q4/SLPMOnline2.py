@@ -1,32 +1,26 @@
-import numpy as np
+import numpy
 from cvxpy import *
 
-############################################################################################
-
-# Initial Offline Problem, where we have access to 'n' bidders, while 'K-n' bidders are unknown.
+n = 4;
 
 # Create two scalar optimization variables.
-m = 10
-K = 10000
-n = 1000
+X = Variable(5);
+z = Variable();
 
-A = np.random.randint(0, 2, (m, K))
+A = numpy.matrix([[1,0,1,1,0],[1,0,0,1,1],[1,0,1,1,0],[0,1,0,1,1],[0,0,1,0,0]]);
 
-X = Variable(K)
-z = Variable()
+pi = numpy.array([0.75, 0.35, 0.4, 0.95, 0.75]);
+#randomVector = numpy.random.rand(1, 5);
+#scaledRandomVector = numpy.multiply(randomVector, 0.2);
+#pi = numpy.add(numpy.array([0.75, 0.35, 0.4, 0.95, 0.75]), scaledRandomVector);
 
-q = np.random.randint(10, 21, (K,1))
-p = np.random.uniform(0, 1, (m,1))
-pi = p.T.dot(A) + np.sqrt(0.2) * np.random.randn(1, K)
-
-A = np.random.randint(0, 2, (m, K))
+q = numpy.array([10, 5, 10, 10, 5]);
 
 constraints = [];
 
-for i in range(A.shape[0]):
+for i in range(A.shape[1]):
     constraints.append( A[i,:]*X - z <= 0 );
 
-    
 for j in range(A.shape[1]):
     constraints.append(X[j] >= 0);
     constraints.append(X[j] <= q[j]);
@@ -39,17 +33,15 @@ obj = Maximize( pi*X - z );
 # Form and solve problem.
 prob = Problem(obj, constraints)
 prob.solve()  # Returns the optimal value.
-print "status:", prob.status
-print "optimal value", prob.value
-print "optimal var:"
+print "Optimal Order Fill:"
 print X.value
 
 ############################################################################################
 
 # Dual of the Linear Problem to Solve Shadow Prices
 
-P = Variable(m);
-s = Variable(K);
+P = Variable(5);
+s = Variable(5);
 
 obj2 = Minimize(q.T*s);
 
@@ -58,10 +50,7 @@ obj2 = Minimize(q.T*s);
 # constraints2.append(P[i] >= 0);
 # constraints2.append(s[i] >= 0);
 
-constraints2 = [A.T*P + s >= pi.T];
-constraints2.append(np.ones(m)*P == 1);
-constraints2.append(P >= 0)
-constraints2.append(s >= 0);
+constraints2 = [A.T*P + s >= pi, numpy.ones(5)*P == 1, P >= 0, s >= 0];
 
 # Form and solve problem.
 prob2 = Problem(obj2, constraints2)
@@ -71,13 +60,25 @@ print P.value
 
 ############################################################################################
 
-# Perform the optimation on additional bidders
+# Use state shadow prices to calculate future online decisions
 
-b = X.value;
+y = numpy.array(P.value);
+b = numpy.zeros(n);
+
+for i in range(0, n):
+    r = 0;
+    for j in range(0, 5):
+        yj = y[j];
+        Aij = A[i,j];
+        r = r + Aij*yj;
+    if pi[i] > r:
+        b[i] = 1;
+
+############################################################################################
 
 constraints = [];
 
-for i in range(A.shape[0]):
+for i in range(A.shape[1]):
     constraints.append( A[i,:]*X - z <= 0 );
 
 for j in range(A.shape[1]):
@@ -86,6 +87,8 @@ for j in range(A.shape[1]):
 
 # Form objective.
 obj = Maximize( pi*X - z );
+
+constraints.append(X[0:n] - b == 0);
 
 # Form and solve problem.
 prob = Problem(obj, constraints)
