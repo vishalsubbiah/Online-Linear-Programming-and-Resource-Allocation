@@ -123,7 +123,3 @@ print (ggplot(data, aes(x = 'iterations', y = 'value', colour = 'variable')) + g
 
 #print (qplot(iterations, offline_v, geom = "line"))
 #print (qplot(iterations, online_v, geom = "line"))
-<<<<<<< HEAD
-
-=======
->>>>>>> 46239a1fc4737cb06cc00acc985eee0d3c7246fd
