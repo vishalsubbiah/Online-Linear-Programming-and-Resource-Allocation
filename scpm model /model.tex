@@ -1,0 +1,217 @@
+\documentclass[12pt]{article}
+
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\begin{document}
+\section*{Part 0}
+\subsection*{Offline Model: SCPM}
+\begin{algorithm}
+\caption{Offline SCPM}
+\begin{algorithmic}
+\STATE intitialize k
+\STATE initialize m
+\STATE initialize n
+\STATE initialize x
+\STATE initialize s
+\STATE initialize z
+\STATE initialize a = random number between (1,2) of size k x m 
+\STATE initialize p = random number between (0,1) of size m x 1
+\STATE initialize q = random number between (10,20) of size k x 1
+\STATE initialize pi = $a^{T}p$ + random number between (0, 0.2) of size k x 1
+\STATE initialize w
+
+\STATE objective1 = $Maximize(pi^{T}*x -z + w*\Sigma(logs_i/m)$
+\STATE objective2 = $Maximize(pi^{T}*x -z + w*\Sigma(1-e^{-s_i}/m)$
+
+\STATE constraints = $[a^{T}x  - z + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem1 = Problem(objective1, constraints)
+\STATE problem1.solve(solver=CVXOPT) 
+
+\end{algorithmic}
+\end{algorithm}
+\pagebreak
+\subsection*{Online Model 1: SCPM}
+\begin{algorithm}
+\caption{Online SCPM}
+\begin{algorithmic}
+\STATE intitialize k
+\STATE initialize m
+\STATE initialize n
+\STATE initialize x
+\STATE initialize s
+\STATE initialize z
+\STATE initialize a = random number between (1,2) of size k x m 
+\STATE initialize p = random number between (0,1) of size m x 1
+\STATE initialize q = random number between (10,20) of size k x 1
+\STATE initialize pi = $a^{T}p$ + random number between (0, 0.2) of size k x 1
+\STATE initialize w
+
+\STATE objective1 = $Maximize(pi^{T}*x -z + w*\Sigma(logs_i/m)$
+\STATE objective2 = $Maximize(pi^{T}*x -z + w*\Sigma(1-e^{-s_i}/m)$
+
+\STATE part 1:
+
+\STATE constraints = $[x[n:] == 0.0,a^{T}x  - z + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem1 = Problem(objective1, constraints)
+\STATE problem1.solve(solver=CVXOPT) 
+
+\STATE part 2:
+\STATE c = x[0:n]
+\STATE constraints = $[x[0:n] - c == 0,a^{T}x  - z + s == 0, x <= q, x >= 0, s >= 0]$
+
+problem2 = Problem(objective1, constraints)
+problem2.solve(solver=CVXOPT) 
+\end{algorithmic}
+\end{algorithm}
+\pagebreak
+\subsection*{Online Model 2: SCPM}
+\begin{algorithm}
+\caption{Online SCPM}
+\begin{algorithmic}
+\STATE intitialize k
+\STATE initialize m
+\STATE initialize n
+\STATE initialize x
+\STATE initialize s
+\STATE initialize z
+\STATE initialize a = random number between (1,2) of size k x m 
+\STATE initialize p = random number between (0,1) of size m x 1
+\STATE initialize q = random number between (10,20) of size k x 1
+\STATE initialize pi = $a^{T}p$ + random number between (0, 0.2) of size k x 1
+\STATE initialize w
+
+\STATE objective1 = $Maximize(pi^{T}*x -z + w*\Sigma(logs_i/m)$
+\STATE objective2 = $Maximize(pi^{T}*x -z + w*\Sigma(1-e^{-s_i}/m)$
+
+\STATE part 1:
+
+\STATE constraints = $[x[n:] == 0.0,a^{T}x  - z + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem1 = Problem(objective1, constraints)
+\STATE problem1.solve(solver=CVXOPT) 
+
+\STATE part 2:
+\FOR{l=n;l<k;l++}
+        \STATE  c = x[0:l]
+        \STATE constraints = $[x[0:l] - c == 0,x[l+1,:]== 0, a^{T}x - z + s == 0, x <= q, x >= 0, s >= 0]$
+      \ENDFOR
+\STATE c = x[0:n]
+\STATE constraints = $[x[0:n] - c == 0,a^{T}x  - z + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem2 = Problem(objective1, constraints)
+\STATE problem2.solve(solver=CVXOPT) 
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+\pagebreak
+
+\section*{Part 3}
+
+\subsection*{Offline Model: SCPM}
+\begin{algorithm}
+\caption{Offline SCPM}
+\begin{algorithmic}
+\STATE intitialize k
+\STATE initialize m
+\STATE initialize n
+\STATE initialize x
+\STATE initialize s
+\STATE initialize b = 1000 of size k x 1
+\STATE initialize a = random number between (1,2) of size k x m 
+\STATE initialize p = random number between (0,1) of size m x 1
+\STATE initialize q = random number between (10,20) of size k x 1
+\STATE initialize pi = $a^{T}p$ + random number between (0, 0.2) of size k x 1
+\STATE initialize w
+
+\STATE objective1 = $Maximize(pi^{T}*x + w*\Sigma(logs_i/m)$
+\STATE objective2 = $Maximize(pi^{T}*x + w*\Sigma(1-e^{-s_i}/m)$
+
+\STATE constraints = $[a^{T}x  - b + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem1 = Problem(objective1, constraints)
+\STATE problem1.solve(solver=CVXOPT) 
+
+\end{algorithmic}
+\end{algorithm}
+\pagebreak
+\subsection*{Online Model 1: SCPM}
+\begin{algorithm}
+\caption{Online SCPM}
+\begin{algorithmic}
+\STATE intitialize k
+\STATE initialize m
+\STATE initialize n
+\STATE initialize x
+\STATE initialize s
+\STATE initialize b = 1000 of size k x 1
+\STATE initialize a = random number between (1,2) of size k x m 
+\STATE initialize p = random number between (0,1) of size m x 1
+\STATE initialize q = random number between (10,20) of size k x 1
+\STATE initialize pi = $a^{T}p$ + random number between (0, 0.2) of size k x 1
+\STATE initialize w
+
+\STATE objective1 = $Maximize(pi^{T}*x + w*\Sigma(logs_i/m)$
+\STATE objective2 = $Maximize(pi^{T}*x + w*\Sigma(1-e^{-s_i}/m)$
+
+\STATE part 1:
+
+\STATE constraints = $[x[n:] == 0.0,a^{T}x  - b + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem1 = Problem(objective1, constraints)
+\STATE problem1.solve(solver=CVXOPT) 
+
+\STATE part 2:
+\STATE c = x[0:n]
+\STATE constraints = $[x[0:n] - c == 0,a^{T}x  - b + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem2 = Problem(objective1, constraints)
+\STATE problem2.solve(solver=CVXOPT) 
+\end{algorithmic}
+\end{algorithm}
+\pagebreak
+\subsection*{Online Model 2: SCPM}
+\begin{algorithm}
+\caption{Online SCPM}
+\begin{algorithmic}
+\STATE intitialize k
+\STATE initialize m
+\STATE initialize n
+\STATE initialize x
+\STATE initialize s
+\STATE initialize z
+\STATE initialize a = random number between (1,2) of size k x m 
+\STATE initialize p = random number between (0,1) of size m x 1
+\STATE initialize q = random number between (10,20) of size k x 1
+\STATE initialize pi = $a^{T}p$ + random number between (0, 0.2) of size k x 1
+\STATE initialize w
+
+\STATE objective1 = $Maximize(pi^{T}*x + w*\Sigma(logs_i/m)$
+\STATE objective2 = $Maximize(pi^{T}*x + w*\Sigma(1-e^{-s_i}/m)$
+
+\STATE part 1:
+
+\STATE constraints = $[x[n:] == 0.0,a^{T}x  - b + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem1 = Problem(objective1, constraints)
+\STATE problem1.solve(solver=CVXOPT) 
+
+\STATE part 2:
+\FOR{l=n;l<k;l++}
+        \STATE  c = x[0:l]
+        \STATE constraints = $[x[0:l] - c == 0,x[l+1,:]== 0, a^{T}x - b + s == 0, x <= q, x >= 0, s >= 0]$
+      \ENDFOR
+\STATE c = x[0:n]
+\STATE constraints = $[x[0:n] - c == 0,a^{T}x  - b + s == 0, x <= q, x >= 0, s >= 0]$
+
+\STATE problem2 = Problem(objective1, constraints)
+\STATE problem2.solve(solver=CVXOPT) 
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}
