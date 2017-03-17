@@ -2,8 +2,9 @@ import numpy as np
 from cvxpy import *
 from random import random, randrange,uniform,normalvariate
 from math import sqrt
-
-
+from ggplot import *
+import pandas as pd
+###############################################################
 k=10
 m=1
 n=4
@@ -29,8 +30,10 @@ prob1 = Problem(obj1, constraints)
 prob1.solve(solver=CVXOPT)  # Returns the optimal value.
 print "status:", prob1.status
 print "optimal value", round(prob1.value,2)
-x.value = [ round(elem, 2) for elem in x.value ]
+x_opt = [ round(elem, 2) for elem in x.value ]
 print "optimal var", x.value
+offline_x = x_opt
+offline_v = round(prob1.value, 2)
 
 ##################################################################
 ###online####
@@ -55,12 +58,14 @@ prob2.solve(solver=CVXOPT,abstol=1e-25) # Returns the optimal value
 
 
 #part 2 version B
+online_v = []
 for l in range(n,k-1):
     c = x[0:l]
     constraints = [x[0:l] - c == 0.0,x[l+1,:]== 0, a.transpose()*x  - b + s == 0.0, x <= q, x >= 0.0, s >= 0.0]
 # Form and solve problem.
     prob2 = Problem(obj1, constraints)
     prob2.solve(solver=CVXOPT,abstol=1e-25)  # Returns the optimal value.
+    online_v.append(round(prob2.value, 2))
 
 
 ###############
@@ -68,5 +73,36 @@ for l in range(n,k-1):
 
 print "status:", prob2.status
 print "optimal value", round(prob2.value,2)
-x.value = [ round(elem, 2) for elem in x.value ]
-print "optimal var", x.value
+x.opt = [ round(elem, 2) for elem in x.value ]
+print "optimal var", x.opt
+online_x = x_opt
+
+#######################################Plotting####################################################
+
+iterations = range(n, k-1, 1)
+data = pd.DataFrame({'iterations': iterations, 'offline': offline_v, 'online': online_v})
+data = pd.melt(data, id_vars = 'iterations')
+print (ggplot(data, aes(x = 'iterations', y = 'value', colour = 'variable')) + geom_line()) +\
+        labs(y = "Opt_values", title = "Optimal Objs")
+
+vals = [np.absolute(online_v[i] - offline_v) for i in range(len(online_v))]
+data = pd.DataFrame({'iterations': iterations, 'diff': vals})
+data = pd.melt(data, id_vars = 'iterations')
+print (ggplot(data, aes(x = 'iterations', y = 'value', colour = 'variable')) + geom_line()) +\
+        labs(y = "Difference in optimal Objs")
+
+iterations = range(k)
+data = pd.DataFrame({'iterations': iterations, 'offline': offline_x, 'online': online_x})
+data = pd.melt(data, id_vars = 'iterations')
+print (ggplot(data, aes(x = 'iterations', y = 'value', colour = 'variable')) + geom_line()) + labs(y = "Opt_x_values")
+
+vals = [np.absolute(online_x[i] - offline_x[i]) for i in xrange(len(offline_x))]
+data = pd.DataFrame({'iterations': iterations, 'diff': vals})
+data = pd.melt(data, id_vars = 'iterations')
+print (ggplot(data, aes(x = 'iterations', y = 'value', colour = 'variable')) + geom_line()) +\
+        labs(y = "Difference in optimal x values")
+
+#print (qplot(iterations, offline_v, geom = "line"))
+#print (qplot(iterations, online_v, geom = "line"))
+
+
