@@ -63,36 +63,37 @@ print P.value
 # Use state shadow prices to calculate future online decisions
 
 y = numpy.array(P.value);
-b = numpy.zeros(n);
+b = numpy.zeros(5);
 
-for i in range(0, n):
+for i in range(n, 5):
     r = 0;
     for j in range(0, 5):
         yj = y[j];
         Aij = A[i,j];
         r = r + Aij*yj;
     if pi[i] > r:
-        b[i] = 1;
+        b[i] = q[i];
 
+print b
 ############################################################################################
 
-constraints = [];
+# constraints = [];
 
-for i in range(A.shape[1]):
-    constraints.append( A[i,:]*X - z <= 0 );
+#for i in range(A.shape[1]):
+#    constraints.append( A[i,:]*X - z <= 0 );
 
-for j in range(A.shape[1]):
-    constraints.append(X[j] >= 0);
-    constraints.append(X[j] <= q[j]);
+#for j in range(A.shape[1]):
+#    constraints.append(X[j] >= 0);
+#    constraints.append(X[j] <= q[j]);
 
 # Form objective.
-obj = Maximize( pi*X - z );
+#obj = Maximize( pi*X - z );
 
-constraints.append(X[0:n] - b == 0);
+#constraints.append(X[0:n] - b == 0);
 
 # Form and solve problem.
-prob = Problem(obj, constraints)
-prob.solve()  # Returns the optimal value.
-print "Optimal Order Fill:"
-print X.value
+# prob = Problem(obj, constraints)
+# prob.solve()  # Returns the optimal value.
+# print "Optimal Order Fill:"
+# print X.value
 
