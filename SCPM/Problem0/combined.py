@@ -65,6 +65,7 @@ for l in range(n,k-1):
     prob2 = Problem(obj1, constraints)
     prob2.solve(solver=SCS)  # Returns the optimal value.
     online_v_2.append(round(prob2.value, 2))
+    print l
 
 ###############
 #final output

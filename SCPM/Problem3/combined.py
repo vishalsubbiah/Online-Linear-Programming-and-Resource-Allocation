@@ -5,9 +5,9 @@ from math import sqrt
 from ggplot import *
 import pandas as pd
 ###############################################################
-k=1000
+k=10000
 m=10
-n=100
+n=1000
 x = Variable(k,1)
 s = Variable(m,1)
 
@@ -16,7 +16,7 @@ p = np.random.uniform(0, 1, (m,1))
 q = np.random.randint(10, 21, (k,1))
 pi = a.dot(p) + np.sqrt(0.2) * np.random.randn(k, 1)
 w=1e-3
-b=np.ones((k,1))*1000.0
+b=np.ones((m,1))*1000.0
 obj1 = Maximize(pi.transpose()*x  + w*sum(log(s))/m)
 obj2 = Maximize(pi.transpose()*x  + w*sum(1-exp(-s))/m)
 
@@ -67,6 +67,7 @@ for l in range(n,k-1):
     prob2 = Problem(obj1, constraints)
     prob2.solve(solver=SCS)  # Returns the optimal value.
     online_v_2.append(round(prob2.value, 2))
+    print l
 
 
 ###############
